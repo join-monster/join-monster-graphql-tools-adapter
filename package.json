@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "lint": "eslint src",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node src/schema.js"
   },
   "files": [
     "src/index.js"
@@ -31,13 +31,12 @@
     "url": "https://github.com/acarl005/join-monster-graphql-tools-adapter/issues"
   },
   "homepage": "https://github.com/acarl005/join-monster-graphql-tools-adapter#readme",
-  "dependencies": {
-    "graphql-tools": "^0.10.1",
-    "join-monster": "^1.0.0-beta.5"
+  "peerDependencies": {
+    "graphql-tools": "^0.4.0",
+    "join-monster": "^1.0.0"
   },
   "devDependencies": {
     "eslint": "^3.17.1",
-    "graphql": "^0.9.1",
     "sqlite": "^2.3.0"
   }
 }

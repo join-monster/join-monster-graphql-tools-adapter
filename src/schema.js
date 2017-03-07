@@ -1,3 +1,4 @@
+const path = require('path')
 const { makeExecutableSchema } = require('graphql-tools')
 const { graphql } = require('graphql')
 const db = require('sqlite')
@@ -125,7 +126,7 @@ const query = `{
   }
 }`
 
-db.open('../db/test1-data.sl3')
+db.open(path.join(__dirname, '..', 'db', 'test1-data.sl3'))
 .then(() => graphql(schema, query))
 .then(res => {
   console.log(require('util').inspect(res, { depth: 10 })) // eslint-disable-line

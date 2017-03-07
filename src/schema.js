@@ -37,6 +37,7 @@ type Query {
 
 const resolvers = {
   Query: {
+    // call joinMonster in the "user" resolver, and all child fields that are tagged with "sqlTable" are handled!
     user(parent, args, ctx, resolveInfo) {
       return joinMonster(resolveInfo, ctx, sql => {
         return db.all(sql)
@@ -44,6 +45,7 @@ const resolvers = {
     }
   },
   User: {
+    // the only field that needs a resolvers, joinMonster hydrates the rest!
     fullName(user) {
       return user.first_name + ' ' + user.last_name
     }
@@ -55,23 +57,27 @@ const schema = makeExecutableSchema({
   resolvers
 })
 
+// tag the types with the extra join monster metadata
 joinMonsterAdapt(schema, {
   Query: {
     fields: {
+      // add a function to generate the "where condition"
       user: {
         where: (table, args) => `${table}.id = ${args.id}`
       }
     }
   },
   User: {
+    // map the User object type to its SQL table
     sqlTable: 'accounts',
     uniqueKey: 'id',
+    // tag the User's fields
     fields: {
-      fullName: {
-        sqlDeps: [ 'first_name', 'last_name' ],
-      },
       email: {
         sqlColumn: 'email_address'
+      },
+      fullName: {
+        sqlDeps: [ 'first_name', 'last_name' ],
       },
       posts: {
         sqlJoin: (userTable, postTable) => `${userTable}.id = ${postTable}.author_id`,
@@ -83,9 +89,11 @@ joinMonsterAdapt(schema, {
     uniqueKey: 'id',
     fields: {
       numComments: {
+        // count with a correlated subquery
         sqlExpr: table => `(SELECT count(*) FROM comments where ${table}.id = comments.post_id)`
       },
       comments: {
+        // fetch the comments in another batch request instead of joining
         sqlBatch: {
           thisKey: 'post_id',
           parentKey: 'id'

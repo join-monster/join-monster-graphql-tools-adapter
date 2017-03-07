@@ -1,0 +1,43 @@
+{
+  "name": "join-monster-graphql-tools-adapter",
+  "version": "0.0.0",
+  "description": "Fetch data for your graph-tools schema using join-monster.",
+  "main": "src/index.js",
+  "scripts": {
+    "lint": "eslint src",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "files": [
+    "src/index.js"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/acarl005/join-monster-graphql-tools-adapter.git"
+  },
+  "keywords": [
+    "graphql",
+    "sql",
+    "join",
+    "monster",
+    "apollo",
+    "batch",
+    "data",
+    "fetch",
+    "schema"
+  ],
+  "author": "Andrew Carlson <acarl005@g.ucla.edu>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/acarl005/join-monster-graphql-tools-adapter/issues"
+  },
+  "homepage": "https://github.com/acarl005/join-monster-graphql-tools-adapter#readme",
+  "dependencies": {
+    "graphql-tools": "^0.10.1",
+    "join-monster": "^1.0.0-beta.5"
+  },
+  "devDependencies": {
+    "eslint": "^3.17.1",
+    "graphql": "^0.9.1",
+    "sqlite": "^2.3.0"
+  }
+}

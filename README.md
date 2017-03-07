@@ -113,7 +113,7 @@ joinMonsterAdapt(typeDefs, {
 Now that our schema is *Join-monsterized*, we are ready to resolve!
 
 ```js
-const joinMonster = require('join-monster')
+const joinMonster = require('join-monster').default
 // node drivers for talking to SQLite
 const db = require('sqlite')
 const { makeExecutableSchema } = require('graphql-tools')

@@ -1,6 +1,6 @@
 {
   "name": "join-monster-graphql-tools-adapter",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Fetch data for your graph-tools schema using join-monster.",
   "main": "src/index.js",
   "scripts": {

@@ -40,19 +40,46 @@ type Query {
 module.exports = typeDefs
 ```
 
-Normally, when using [graphql-js](https://github.com/graphql/graphql-js), the reference implementation, you tag the Type constructors with extra metadata to configure Join Monster.
+When using [graphql-js](https://github.com/graphql/graphql-js), the reference implementation, you tag the Type constructors with extra metadata to configure Join Monster.
 The schema language does not allow adding arbitrary properties to the type definitions.
 
 This package let's you add those tags without messing with the internals of the built schema object.
-Once you familiarize yourself with [Join Monster's API](http://join-monster.readthedocs.io), you can utilize all the same properties by passing it to this function.
+Once you familiarize yourself with [Join Monster's API](http://join-monster.readthedocs.io), you can use all the same properties by passing it to this function.
 
 
 ```js
 const joinMonsterAdapt = require('join-monster-graphql-tools-adapter')
 const typeDefs = require('../path/to/types')
 
-// tag the types with the extra join monster metadata
-joinMonsterAdapt(typeDefs, {
+const joinMonster = require('join-monster').default
+// node drivers for talking to SQLite
+const db = require('sqlite')
+const { makeExecutableSchema } = require('graphql-tools')
+
+const resolvers = {
+  Query: {
+    // call joinMonster in the "user" resolver, and all child fields that are tagged with "sqlTable" are handled!
+    user(parent, args, ctx, resolveInfo) {
+      return joinMonster(resolveInfo, ctx, sql => {
+        return db.all(sql)
+      }, { dialect: 'sqlite3' })
+    }
+  },
+  User: {
+    // the only field that needs a resolver, joinMonster hydrates the rest!
+    fullName(user) {
+      return user.first_name + ' ' + user.last_name
+    }
+  }
+}
+
+const schema = makeExecutableSchema({
+  typeDefs,
+  resolvers
+})
+
+// tag the schema types with the extra join monster metadata
+joinMonsterAdapt(schema, {
   Query: {
     fields: {
       // add a function to generate the "where condition"
@@ -110,40 +137,7 @@ joinMonsterAdapt(typeDefs, {
 })
 ```
 
-Now that our schema is *Join-monsterized*, we are ready to resolve!
-
-```js
-const joinMonster = require('join-monster').default
-// node drivers for talking to SQLite
-const db = require('sqlite')
-const { makeExecutableSchema } = require('graphql-tools')
-
-const typeDefs = require('../path/to/types')
-
-const resolvers = {
-  Query: {
-    // call joinMonster in the "user" resolver, and all child fields that are tagged with "sqlTable" are handled!
-    user(parent, args, ctx, resolveInfo) {
-      return joinMonster(resolveInfo, ctx, sql => {
-        return db.all(sql)
-      }, { dialect: 'sqlite3' })
-    }
-  },
-  User: {
-    // the only field that needs a resolvers, joinMonster hydrates the rest!
-    fullName(user) {
-      return user.first_name + ' ' + user.last_name
-    }
-  }
-}
-
-const schema = makeExecutableSchema({
-  typeDefs,
-  resolvers
-})
-```
-
-And we're ready to start executing some queries!
+Now that our schema is *Join-monsterized*, we are ready to start executing some queries!
 
 ```js
 const { graphql } = require('graphql')
@@ -168,4 +162,3 @@ const query = `{
 }`
 graphql(schema, query).then(doSomethingCrazy)
 ```
-

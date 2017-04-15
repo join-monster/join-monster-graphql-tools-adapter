@@ -15,6 +15,13 @@ function decorateType(type, jmConfig) {
   const typeConfig = type._typeConfig
   typeConfig.sqlTable = jmConfig.sqlTable
   typeConfig.uniqueKey = jmConfig.uniqueKey
+  //These properties may appear for interface types
+  if (jmConfig.typeHint) {
+    typeConfig.typeHint = jmConfig.typeHint
+  }
+  if (jmConfig.resolveType) {
+    typeConfig.resolveType = jmConfig.resolveType
+  }
   for (let fieldName in jmConfig.fields) {
     const field = type._fields[fieldName]
     assert(field, `Field "${fieldName}" not found in type "${type.name}".`)

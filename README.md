@@ -1,6 +1,6 @@
 # Join Monster GraphQL Tools Adapter
 
-Use [Join Monster](https://github.com/stems/join-monster)'s SQL generation and query batching powers with Apollo server [graphql-tools](https://github.com/apollographql/graphql-tools)
+Use [Join Monster](https://github.com/stems/join-monster)'s SQL generation and query batching powers with the Apollo [graphql-tools](https://github.com/apollographql/graphql-tools) server package.
 
 ### What's this package for?
 

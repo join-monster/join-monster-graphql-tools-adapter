@@ -15,7 +15,10 @@ function decorateType(type, jmConfig) {
   const typeConfig = type._typeConfig
   typeConfig.sqlTable = jmConfig.sqlTable
   typeConfig.uniqueKey = jmConfig.uniqueKey
-  //These properties may appear for interface types
+  if (jmConfig.alwaysFetch) {
+    typeConfig.alwaysFetch = jmConfig.alwaysFetch
+  }
+  // These properties may appear for interface types
   if (jmConfig.typeHint) {
     typeConfig.typeHint = jmConfig.typeHint
   }

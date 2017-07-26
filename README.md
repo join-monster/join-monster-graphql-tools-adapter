@@ -162,3 +162,6 @@ const query = `{
 }`
 graphql(schema, query).then(doSomethingCrazy)
 ```
+
+### Advisory
+There is a known issue (see #4) that passing the `logger` in graphql-tools `makeExecutableSchema` breaks automatic fetching of default column values. For the time being, it is suggested to remove the logger or add `sqlColumn` to every field.

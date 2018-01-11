@@ -18,6 +18,9 @@ function decorateType(type, jmConfig) {
   if (jmConfig.alwaysFetch) {
     typeConfig.alwaysFetch = jmConfig.alwaysFetch
   }
+  if (jmConfig.jmIgnoreAll) {
+    typeConfig.jmIgnoreAll = jmConfig.jmIgnoreAll;
+  }
   if (jmConfig.jmIgnoreTable) {
     typeConfig.jmIgnoreTable = jmConfig.jmIgnoreTable;
   }

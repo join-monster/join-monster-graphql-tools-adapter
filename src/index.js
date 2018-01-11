@@ -18,6 +18,9 @@ function decorateType(type, jmConfig) {
   if (jmConfig.alwaysFetch) {
     typeConfig.alwaysFetch = jmConfig.alwaysFetch
   }
+  if (jmConfig.jmIgnoreTable) {
+    typeConfig.jmIgnoreTable = jmConfig.jmIgnoreTable;
+  }
   // These properties may appear for interface types
   if (jmConfig.typeHint) {
     typeConfig.typeHint = jmConfig.typeHint

@@ -32,7 +32,6 @@
   },
   "homepage": "https://github.com/acarl005/join-monster-graphql-tools-adapter#readme",
   "peerDependencies": {
-    "graphql-tools": "^0.4.0",
     "join-monster": "*"
   },
   "devDependencies": {

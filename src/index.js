@@ -23,7 +23,7 @@ function decorateType(type, jmConfig) {
     typeConfig.typeHint = jmConfig.typeHint
   }
   if (jmConfig.resolveType) {
-    typeConfig.resolveType = jmConfig.resolveType
+    type.resolveType = jmConfig.resolveType
   }
   for (let fieldName in jmConfig.fields) {
     const field = type._fields[fieldName]

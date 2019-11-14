@@ -36,7 +36,7 @@
     "join-monster": "*"
   },
   "devDependencies": {
-    "eslint": "^3.17.1",
+    "eslint": "^6.6.0",
     "sqlite": "^2.3.0"
   }
 }

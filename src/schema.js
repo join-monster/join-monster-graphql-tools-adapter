@@ -39,9 +39,14 @@ const resolvers = {
   Query: {
     // call joinMonster in the "user" resolver, and all child fields that are tagged with "sqlTable" are handled!
     user(parent, args, ctx, resolveInfo) {
-      return joinMonster(resolveInfo, ctx, sql => {
-        return db.all(sql)
-      }, { dialect: 'sqlite3' })
+      return joinMonster(
+        resolveInfo,
+        ctx,
+        sql => {
+          return db.all(sql)
+        },
+        { dialect: 'sqlite3' }
+      )
     }
   },
   User: {
@@ -77,10 +82,11 @@ joinMonsterAdapt(schema, {
         sqlColumn: 'email_address'
       },
       fullName: {
-        sqlDeps: [ 'first_name', 'last_name' ],
+        sqlDeps: ['first_name', 'last_name']
       },
       posts: {
-        sqlJoin: (userTable, postTable) => `${userTable}.id = ${postTable}.author_id`,
+        sqlJoin: (userTable, postTable) =>
+          `${userTable}.id = ${postTable}.author_id`
       }
     }
   },
@@ -90,7 +96,8 @@ joinMonsterAdapt(schema, {
     fields: {
       numComments: {
         // count with a correlated subquery
-        sqlExpr: table => `(SELECT count(*) FROM comments where ${table}.id = comments.post_id)`
+        sqlExpr: table =>
+          `(SELECT count(*) FROM comments where ${table}.id = comments.post_id)`
       },
       comments: {
         // fetch the comments in another batch request instead of joining
@@ -135,9 +142,8 @@ const query = `{
 }`
 
 db.open(path.join(__dirname, '..', 'db', 'test1-data.sl3'))
-.then(() => graphql(schema, query))
-.then(res => {
-  console.log(require('util').inspect(res, { depth: 10 })) // eslint-disable-line
-})
-.catch(console.error) // eslint-disable-line
-
+  .then(() => graphql(schema, query))
+  .then(res => {
+    console.log(require('util').inspect(res, { depth: 10 })) // eslint-disable-line
+  })
+  .catch(console.error) // eslint-disable-line

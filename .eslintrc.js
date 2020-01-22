@@ -1,7 +1,11 @@
 module.exports = {
+  parserOptions: {
+    ecmaVersion: 8
+  },
   env: {
     es6: true,
-    node: true
+    node: true,
+    jest: true
   },
   extends: 'eslint:recommended',
   rules: {

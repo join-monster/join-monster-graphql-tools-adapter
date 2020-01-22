@@ -1,0 +1,52 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`works 1`] = `
+Object {
+  "data": Object {
+    "user": Object {
+      "email": "andrew@stem.is",
+      "fullName": "andrew carlson",
+      "id": 1,
+      "posts": Array [
+        Object {
+          "body": "Check out this cool new GraphQL library, Join Monster.",
+          "comments": Array [
+            Object {
+              "archived": false,
+              "authorId": 1,
+              "body": "Do not forget to check out the demo.",
+              "id": 4,
+            },
+            Object {
+              "archived": false,
+              "authorId": 3,
+              "body": "This sucks. Go use REST you scrub.",
+              "id": 5,
+            },
+            Object {
+              "archived": false,
+              "authorId": 1,
+              "body": "Also, submit a PR if you have a feature you want to add.",
+              "id": 6,
+            },
+            Object {
+              "archived": true,
+              "authorId": 2,
+              "body": "FIRST COMMENT!",
+              "id": 7,
+            },
+            Object {
+              "archived": false,
+              "authorId": 1,
+              "body": "Somebody please help me with this library. It is so much work.",
+              "id": 8,
+            },
+          ],
+          "id": 2,
+          "numComments": 5,
+        },
+      ],
+    },
+  },
+}
+`;

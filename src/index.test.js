@@ -141,9 +141,8 @@ const query = `{
   }
 }`
 
-db.open(path.join(__dirname, '..', 'db', 'test1-data.sl3'))
-  .then(() => graphql(schema, query))
-  .then(res => {
-    console.log(require('util').inspect(res, { depth: 10 })) // eslint-disable-line
-  })
-  .catch(console.error) // eslint-disable-line
+it('works', async () => {
+  await db.open(path.join(__dirname, '..', 'db', 'test1-data.sl3'))
+  const res = await graphql(schema, query)
+  expect(res).toMatchSnapshot()
+})

@@ -25,6 +25,11 @@ function decorateType(type, jmConfig) {
   if (jmConfig.resolveType) {
     type._typeConfig.resolveType = jmConfig.resolveType
   }
+
+  if (jmConfig.extensions) { // version 3 of Join-Monster 
+    Object.assign(type.extensions = {}, jmConfig.extensions)
+  }
+
   for (let fieldName in jmConfig.fields) {
     const field = type._fields[fieldName]
     assert(field, `Field "${fieldName}" not found in type "${type.name}".`)

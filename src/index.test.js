@@ -141,8 +141,124 @@ const query = `{
   }
 }`
 
-it('works', async () => {
+
+const schema_v3 = makeExecutableSchema({
+  typeDefs,
+  resolvers
+})
+
+// tag the types with the extra join monster metadata
+joinMonsterAdapt(schema_v3, {
+  Query: {
+    fields: {
+      // add a function to generate the "where condition"
+      user: {
+        extensions: {
+          JoinMonster: {
+            where: (table, args) => `${table}.id = ${args.id}`
+          }
+        }
+      }
+    }
+  },
+  User: {
+    // map the User object type to its SQL table
+    extensions: {
+      JoinMonster: {
+        sqlTable: 'accounts',
+        uniqueKey: 'id',
+      }
+    },
+    // tag the User's fields
+    fields: {
+      email: {
+        extensions: {
+          JoinMonster: {
+            sqlColumn: 'email_address'
+          }
+        }
+      },
+      fullName: {
+        extensions: {
+          JoinMonster: {
+            sqlDeps: ['first_name', 'last_name']
+          }
+        }
+      },
+      posts: {
+        extensions: {
+          JoinMonster: {
+            sqlJoin: (userTable, postTable) =>
+              `${userTable}.id = ${postTable}.author_id`
+          }
+        }
+      }
+    }
+  },
+  Post: {
+    sqlTable: 'posts',
+    uniqueKey: 'id',
+    fields: {
+      numComments: {
+        // count with a correlated subquery
+        extensions: {
+          JoinMonster: {
+            sqlExpr: table =>
+              `(SELECT count(*) FROM comments where ${table}.id = comments.post_id)`
+          }
+        }
+      },
+      comments: {
+        // fetch the comments in another batch request instead of joining
+        extensions: {
+          JoinMonster: {
+            sqlBatch: {
+              thisKey: 'post_id',
+              parentKey: 'id'
+            }
+          }
+        }
+      }
+    }
+  },
+  Comment: {
+    extensions: {
+      JoinMonster: {
+        sqlTable: 'comments',
+        uniqueKey: 'id',
+      }
+    },
+    fields: {
+      postId: {
+        extensions: {
+          JoinMonster: {
+            sqlColumn: 'post_id'
+          }
+        }
+      },
+      authorId: {
+        extensions: {
+          JoinMonster: {
+            sqlColumn: 'author_id'
+          }
+        }
+      }
+    }
+  }
+})
+
+
+
+it('works (deprecated)', async () => {
   await db.open(path.join(__dirname, '..', 'db', 'test1-data.sl3'))
   const res = await graphql(schema, query)
+  expect(res).toMatchSnapshot()
+})
+
+
+
+it('works (v3)', async () => {
+  await db.open(path.join(__dirname, '..', 'db', 'test1-data.sl3'))
+  const res = await graphql(schema_v3, query)
   expect(res).toMatchSnapshot()
 })

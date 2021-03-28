@@ -79,6 +79,7 @@ const schema = makeExecutableSchema({
 })
 
 // tag the schema types with the extra join monster metadata
+// Note the change in JoinMonster API (v3) - extensions: {} block
 joinMonsterAdapt(schema, {
   Query: {
     fields: {
@@ -99,7 +100,7 @@ joinMonsterAdapt(schema, {
         sqlTable: 'accounts',
         uniqueKey: 'id',
       }
-    }
+    },
     // tag the User's fields
     fields: {
       email: {
@@ -126,8 +127,12 @@ joinMonsterAdapt(schema, {
     }
   },
   Post: {
-    sqlTable: 'posts',
-    uniqueKey: 'id',
+    extensions: {
+      joinMonster: {
+        sqlTable: 'posts',
+        uniqueKey: 'id',
+      }
+    },
     fields: {
       numComments: {
         extensions: {
@@ -139,7 +144,6 @@ joinMonsterAdapt(schema, {
       },
       comments: {
         // fetch the comments in another batch request instead of joining
-
         extensions: {
           joinMonster: {
             sqlBatch: {
@@ -152,12 +156,12 @@ joinMonsterAdapt(schema, {
     }
   },
   Comment: {
-        extensions: {
-          joinMonster: {
-            sqlTable: 'comments',
-            uniqueKey: 'id',
-          }
-        }
+    extensions: {
+      joinMonster: {
+        sqlTable: 'comments',
+        uniqueKey: 'id',
+      }
+    },
     fields: {
       postId: {
         extensions: {

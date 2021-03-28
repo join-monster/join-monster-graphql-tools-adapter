@@ -13,6 +13,12 @@ module.exports = function joinMonsterAdapt(schema, jmConfigs) {
 function decorateType(type, jmConfig) {
   // first get the properties that should be on the type directly
   type._typeConfig = {}
+
+  if (jmConfig.sqlTable){
+    // emit depreaction warning
+    process.emitWarning("Deprecated: JoinMonster has changed its API v3 requires extensions: { } block - consider upgrading JoinMonster ")
+  }
+
   type._typeConfig.sqlTable = jmConfig.sqlTable
   type._typeConfig.uniqueKey = jmConfig.uniqueKey
   if (jmConfig.alwaysFetch) {

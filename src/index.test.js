@@ -56,72 +56,6 @@ const resolvers = {
     }
   }
 }
-
-const schema = makeExecutableSchema({
-  typeDefs,
-  resolvers
-})
-
-// tag the types with the extra join monster metadata
-joinMonsterAdapt(schema, {
-  Query: {
-    fields: {
-      // add a function to generate the "where condition"
-      user: {
-        where: (table, args) => `${table}.id = ${args.id}`
-      }
-    }
-  },
-  User: {
-    // map the User object type to its SQL table
-    sqlTable: 'accounts',
-    uniqueKey: 'id',
-    // tag the User's fields
-    fields: {
-      email: {
-        sqlColumn: 'email_address'
-      },
-      fullName: {
-        sqlDeps: ['first_name', 'last_name']
-      },
-      posts: {
-        sqlJoin: (userTable, postTable) =>
-          `${userTable}.id = ${postTable}.author_id`
-      }
-    }
-  },
-  Post: {
-    sqlTable: 'posts',
-    uniqueKey: 'id',
-    fields: {
-      numComments: {
-        // count with a correlated subquery
-        sqlExpr: table =>
-          `(SELECT count(*) FROM comments where ${table}.id = comments.post_id)`
-      },
-      comments: {
-        // fetch the comments in another batch request instead of joining
-        sqlBatch: {
-          thisKey: 'post_id',
-          parentKey: 'id'
-        }
-      }
-    }
-  },
-  Comment: {
-    sqlTable: 'comments',
-    uniqueKey: 'id',
-    fields: {
-      postId: {
-        sqlColumn: 'post_id'
-      },
-      authorId: {
-        sqlColumn: 'author_id'
-      }
-    }
-  }
-})
-
 const query = `{
   user(id: 1) {
     id
@@ -141,20 +75,19 @@ const query = `{
   }
 }`
 
-
-const schema_v3 = makeExecutableSchema({
+const schema = makeExecutableSchema({
   typeDefs,
   resolvers
 })
 
 // tag the types with the extra join monster metadata
-joinMonsterAdapt(schema_v3, {
+joinMonsterAdapt(schema, {
   Query: {
     fields: {
       // add a function to generate the "where condition"
       user: {
         extensions: {
-          JoinMonster: {
+          joinMonster: {
             where: (table, args) => `${table}.id = ${args.id}`
           }
         }
@@ -164,7 +97,7 @@ joinMonsterAdapt(schema_v3, {
   User: {
     // map the User object type to its SQL table
     extensions: {
-      JoinMonster: {
+      joinMonster: {
         sqlTable: 'accounts',
         uniqueKey: 'id',
       }
@@ -173,21 +106,21 @@ joinMonsterAdapt(schema_v3, {
     fields: {
       email: {
         extensions: {
-          JoinMonster: {
+          joinMonster: {
             sqlColumn: 'email_address'
           }
         }
       },
       fullName: {
         extensions: {
-          JoinMonster: {
+          joinMonster: {
             sqlDeps: ['first_name', 'last_name']
           }
         }
       },
       posts: {
         extensions: {
-          JoinMonster: {
+          joinMonster: {
             sqlJoin: (userTable, postTable) =>
               `${userTable}.id = ${postTable}.author_id`
           }
@@ -196,13 +129,17 @@ joinMonsterAdapt(schema_v3, {
     }
   },
   Post: {
-    sqlTable: 'posts',
-    uniqueKey: 'id',
+    extensions: {
+      joinMonster: {
+        sqlTable: 'posts',
+        uniqueKey: 'id',
+      }
+    },
     fields: {
       numComments: {
         // count with a correlated subquery
         extensions: {
-          JoinMonster: {
+          joinMonster: {
             sqlExpr: table =>
               `(SELECT count(*) FROM comments where ${table}.id = comments.post_id)`
           }
@@ -211,7 +148,7 @@ joinMonsterAdapt(schema_v3, {
       comments: {
         // fetch the comments in another batch request instead of joining
         extensions: {
-          JoinMonster: {
+          joinMonster: {
             sqlBatch: {
               thisKey: 'post_id',
               parentKey: 'id'
@@ -223,7 +160,7 @@ joinMonsterAdapt(schema_v3, {
   },
   Comment: {
     extensions: {
-      JoinMonster: {
+      joinMonster: {
         sqlTable: 'comments',
         uniqueKey: 'id',
       }
@@ -231,14 +168,14 @@ joinMonsterAdapt(schema_v3, {
     fields: {
       postId: {
         extensions: {
-          JoinMonster: {
+          joinMonster: {
             sqlColumn: 'post_id'
           }
         }
       },
       authorId: {
         extensions: {
-          JoinMonster: {
+          joinMonster: {
             sqlColumn: 'author_id'
           }
         }
@@ -247,18 +184,8 @@ joinMonsterAdapt(schema_v3, {
   }
 })
 
-
-
-it('works (deprecated)', async () => {
+it('works', async () => {
   await db.open(path.join(__dirname, '..', 'db', 'test1-data.sl3'))
   const res = await graphql(schema, query)
-  expect(res).toMatchSnapshot()
-})
-
-
-
-it('works (v3)', async () => {
-  await db.open(path.join(__dirname, '..', 'db', 'test1-data.sl3'))
-  const res = await graphql(schema_v3, query)
   expect(res).toMatchSnapshot()
 })

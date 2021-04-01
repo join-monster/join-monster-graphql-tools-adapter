@@ -56,72 +56,6 @@ const resolvers = {
     }
   }
 }
-
-const schema = makeExecutableSchema({
-  typeDefs,
-  resolvers
-})
-
-// tag the types with the extra join monster metadata
-joinMonsterAdapt(schema, {
-  Query: {
-    fields: {
-      // add a function to generate the "where condition"
-      user: {
-        where: (table, args) => `${table}.id = ${args.id}`
-      }
-    }
-  },
-  User: {
-    // map the User object type to its SQL table
-    sqlTable: 'accounts',
-    uniqueKey: 'id',
-    // tag the User's fields
-    fields: {
-      email: {
-        sqlColumn: 'email_address'
-      },
-      fullName: {
-        sqlDeps: ['first_name', 'last_name']
-      },
-      posts: {
-        sqlJoin: (userTable, postTable) =>
-          `${userTable}.id = ${postTable}.author_id`
-      }
-    }
-  },
-  Post: {
-    sqlTable: 'posts',
-    uniqueKey: 'id',
-    fields: {
-      numComments: {
-        // count with a correlated subquery
-        sqlExpr: table =>
-          `(SELECT count(*) FROM comments where ${table}.id = comments.post_id)`
-      },
-      comments: {
-        // fetch the comments in another batch request instead of joining
-        sqlBatch: {
-          thisKey: 'post_id',
-          parentKey: 'id'
-        }
-      }
-    }
-  },
-  Comment: {
-    sqlTable: 'comments',
-    uniqueKey: 'id',
-    fields: {
-      postId: {
-        sqlColumn: 'post_id'
-      },
-      authorId: {
-        sqlColumn: 'author_id'
-      }
-    }
-  }
-})
-
 const query = `{
   user(id: 1) {
     id
@@ -140,6 +74,115 @@ const query = `{
     }
   }
 }`
+
+const schema = makeExecutableSchema({
+  typeDefs,
+  resolvers
+})
+
+// tag the types with the extra join monster metadata
+joinMonsterAdapt(schema, {
+  Query: {
+    fields: {
+      // add a function to generate the "where condition"
+      user: {
+        extensions: {
+          joinMonster: {
+            where: (table, args) => `${table}.id = ${args.id}`
+          }
+        }
+      }
+    }
+  },
+  User: {
+    // map the User object type to its SQL table
+    extensions: {
+      joinMonster: {
+        sqlTable: 'accounts',
+        uniqueKey: 'id',
+      }
+    },
+    // tag the User's fields
+    fields: {
+      email: {
+        extensions: {
+          joinMonster: {
+            sqlColumn: 'email_address'
+          }
+        }
+      },
+      fullName: {
+        extensions: {
+          joinMonster: {
+            sqlDeps: ['first_name', 'last_name']
+          }
+        }
+      },
+      posts: {
+        extensions: {
+          joinMonster: {
+            sqlJoin: (userTable, postTable) =>
+              `${userTable}.id = ${postTable}.author_id`
+          }
+        }
+      }
+    }
+  },
+  Post: {
+    extensions: {
+      joinMonster: {
+        sqlTable: 'posts',
+        uniqueKey: 'id',
+      }
+    },
+    fields: {
+      numComments: {
+        // count with a correlated subquery
+        extensions: {
+          joinMonster: {
+            sqlExpr: table =>
+              `(SELECT count(*) FROM comments where ${table}.id = comments.post_id)`
+          }
+        }
+      },
+      comments: {
+        // fetch the comments in another batch request instead of joining
+        extensions: {
+          joinMonster: {
+            sqlBatch: {
+              thisKey: 'post_id',
+              parentKey: 'id'
+            }
+          }
+        }
+      }
+    }
+  },
+  Comment: {
+    extensions: {
+      joinMonster: {
+        sqlTable: 'comments',
+        uniqueKey: 'id',
+      }
+    },
+    fields: {
+      postId: {
+        extensions: {
+          joinMonster: {
+            sqlColumn: 'post_id'
+          }
+        }
+      },
+      authorId: {
+        extensions: {
+          joinMonster: {
+            sqlColumn: 'author_id'
+          }
+        }
+      }
+    }
+  }
+})
 
 it('works', async () => {
   await db.open(path.join(__dirname, '..', 'db', 'test1-data.sl3'))

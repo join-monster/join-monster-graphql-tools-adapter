@@ -32,16 +32,19 @@
   },
   "homepage": "https://github.com/acarl005/join-monster-graphql-tools-adapter#readme",
   "peerDependencies": {
-    "graphql-tools": ">= 0.4 < 5",
-    "graphql": ">= 0.6 < 15",
+    "graphql-tools": ">= 0.4 <= 7",
+    "graphql": ">= 0.6 <= 15",
     "join-monster": "*"
   },
   "devDependencies": {
     "eslint": "^6.8.0",
-    "graphql": "^14.5.8",
-    "graphql-tools": "^4.0.6",
-    "jest": "^25.1.0",
-    "join-monster": "^2.1.1",
+    "graphql": "^15.5.0",
+    "graphql-tools": "^7.0.4",
+    "jest": "^25.5.4",
+    "join-monster": "^3.0.1",
     "sqlite": "^2.3.0"
+  },
+  "jest": {
+    "testEnvironment": "node"
   }
 }

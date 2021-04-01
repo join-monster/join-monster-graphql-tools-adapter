@@ -79,58 +79,103 @@ const schema = makeExecutableSchema({
 })
 
 // tag the schema types with the extra join monster metadata
+// Note the change in JoinMonster API (v3) - extensions: {} block
 joinMonsterAdapt(schema, {
   Query: {
     fields: {
       // add a function to generate the "where condition"
       user: {
-        where: (table, args) => `${table}.id = ${args.id}`
+        extensions: {
+          joinMonster: {
+            where: (table, args) => `${table}.id = ${args.id}`
+          }
+        }
       }
     }
   },
   User: {
     // map the User object type to its SQL table
-    sqlTable: 'accounts',
-    uniqueKey: 'id',
+    extensions: {
+      joinMonster: {
+        sqlTable: 'accounts',
+        uniqueKey: 'id',
+      }
+    },
     // tag the User's fields
     fields: {
       email: {
-        sqlColumn: 'email_address'
+        extensions: {
+          joinMonster: {
+            sqlColumn: 'email_address'
+          }
+        }
       },
       fullName: {
-        sqlDeps: [ 'first_name', 'last_name' ],
+        extensions: {
+          joinMonster: {
+            sqlDeps: [ 'first_name', 'last_name' ]
+          }
+        }
       },
       posts: {
-        sqlJoin: (userTable, postTable) => `${userTable}.id = ${postTable}.author_id`,
+        extensions: {
+          joinMonster: {
+            sqlJoin: (userTable, postTable) => `${userTable}.id = ${postTable}.author_id`,
+          }
+        }
       }
     }
   },
   Post: {
-    sqlTable: 'posts',
-    uniqueKey: 'id',
+    extensions: {
+      joinMonster: {
+        sqlTable: 'posts',
+        uniqueKey: 'id',
+      }
+    },
     fields: {
       numComments: {
+        extensions: {
+          joinMonster: {
         // count with a correlated subquery
-        sqlExpr: table => `(SELECT count(*) FROM comments where ${table}.id = comments.post_id)`
+            sqlExpr: table => `(SELECT count(*) FROM comments where ${table}.id = comments.post_id)`
+          }
+        }
       },
       comments: {
         // fetch the comments in another batch request instead of joining
-        sqlBatch: {
-          thisKey: 'post_id',
-          parentKey: 'id'
+        extensions: {
+          joinMonster: {
+            sqlBatch: {
+              thisKey: 'post_id',
+              parentKey: 'id'
+            }
+          }
         }
       }
     }
   },
   Comment: {
-    sqlTable: 'comments',
-    uniqueKey: 'id',
+    extensions: {
+      joinMonster: {
+        sqlTable: 'comments',
+        uniqueKey: 'id',
+      }
+    },
     fields: {
       postId: {
-        sqlColumn: 'post_id'
+        extensions: {
+          joinMonster: {
+            sqlColumn: 'post_id'
+            }
+          }
       },
       authorId: {
-        sqlColumn: 'author_id'
+        extensions: {
+          joinMonster: {
+            sqlColumn: 'author_id'
+          }
+        }
       }
     }
   }
